@@ -39,13 +39,13 @@ export function Logo({
   const content = (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <span
-        className={`flex shrink-0 items-center justify-center rounded-lg bg-brand-primary font-bold text-white shadow-sm ${badgeSizes[size]}`}
+        className={`flex shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary to-blue-600 font-bold text-white shadow-lg shadow-brand-primary/30 transition-transform hover:scale-105 ${badgeSizes[size]}`}
         aria-hidden="true"
       >
         ST
       </span>
       {showName && (
-        <span className={`leading-tight ${nameSizes[size]} ${nameClass}`}>
+        <span className={`leading-tight font-bold transition-colors ${nameSizes[size]} ${nameClass}`}>
           {siteConfig.name}
         </span>
       )}
