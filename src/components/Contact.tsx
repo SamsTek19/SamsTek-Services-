@@ -7,6 +7,34 @@ export function Contact() {
     { label: "YouTube", href: siteConfig.social.youtube, icon: Youtube },
   ];
 
+  const contactMethods = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: siteConfig.email,
+      href: `mailto:${siteConfig.email}`,
+      color: "from-blue-500 to-cyan-500",
+      bg: "from-blue-50 to-cyan-50",
+    },
+    {
+      icon: Phone,
+      label: "Phone",
+      value: siteConfig.phone,
+      href: `tel:${siteConfig.phone.replace(/\s/g, "")}`,
+      color: "from-brand-primary to-blue-500",
+      bg: "from-brand-primary/5 to-blue-50",
+    },
+    {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: "Chat with us",
+      href: siteConfig.whatsapp,
+      color: "from-green-500 to-emerald-500",
+      bg: "from-green-50 to-emerald-50",
+      external: true,
+    },
+  ];
+
   return (
     <section id="contact" className="relative px-4 py-20 sm:px-6 sm:py-24">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

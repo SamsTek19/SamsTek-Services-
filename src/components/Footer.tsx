@@ -69,7 +69,7 @@ export function Footer() {
                     {siteConfig.email}
                   </a>
                 </li>
-                {siteConfig.phones.map((phone) => (
+                  {siteConfig.phones.map((phone) => (
                   <li key={phone.tel}>
                     <a
                       href={`tel:${phone.tel}`}
