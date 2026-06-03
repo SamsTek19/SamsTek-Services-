@@ -18,25 +18,22 @@ export function Footer() {
 
   return (
     <footer className="relative border-t border-slate-200/40 bg-gradient-to-b from-slate-50/50 to-slate-100/50 backdrop-blur-sm">
-      {/* Background accent */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-32 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -right-32 w-64 h-64 bg-brand-secondary/5 rounded-full blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 -left-32 h-64 w-64 rounded-full bg-brand-primary/5 blur-3xl" />
+        <div className="absolute top-1/2 -right-32 h-64 w-64 rounded-full bg-brand-secondary/5 blur-3xl" />
       </div>
 
       <div className="relative">
-        {/* Main footer content */}
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Brand column */}
             <div>
               <Logo size="sm" />
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                Practical technology training for modern learners. Learn from experienced instructors and build real-world skills.
+                Practical technology training for modern learners. Learn from experienced
+                instructors and build real-world skills.
               </p>
             </div>
 
-            {/* Quick Links */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-brand-text">
                 Navigation
@@ -55,7 +52,6 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Contact Info */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-brand-text">
                 Get in Touch
@@ -69,7 +65,7 @@ export function Footer() {
                     {siteConfig.email}
                   </a>
                 </li>
-                  {siteConfig.phones.map((phone) => (
+                {siteConfig.phones.map((phone) => (
                   <li key={phone.tel}>
                     <a
                       href={`tel:${phone.tel}`}
@@ -92,7 +88,6 @@ export function Footer() {
               </ul>
             </div>
 
-            {/* Social Links */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-brand-text">
                 Follow Us
@@ -115,10 +110,8 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-slate-200/40" />
 
-        {/* Copyright bar */}
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-xs text-slate-500">

@@ -19,10 +19,11 @@ export function Contact() {
     {
       icon: Phone,
       label: "Phone",
-      value: siteConfig.phone,
-      href: `tel:${siteConfig.phone.replace(/\s/g, "")}`,
+      value: siteConfig.phones.map((p) => p.display).join(" · "),
+      href: `tel:${siteConfig.phones[0].tel}`,
       color: "from-brand-primary to-blue-500",
       bg: "from-brand-primary/5 to-blue-50",
+      extraPhones: siteConfig.phones.slice(1),
     },
     {
       icon: MessageCircle,
@@ -37,7 +38,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative px-4 py-20 sm:px-6 sm:py-24">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-1/3 -left-40 h-80 w-80 rounded-full bg-brand-primary/5 blur-3xl" />
         <div className="absolute bottom-1/3 -right-40 h-80 w-80 rounded-full bg-brand-secondary/5 blur-3xl" />
       </div>
@@ -56,47 +57,36 @@ export function Contact() {
         </div>
 
         <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          <a
-            href={`mailto:${siteConfig.email}`}
-            className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-blue-50 to-cyan-50 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-slate-200/80 hover:shadow-lg"
-          >
-            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg">
-              <Mail className="h-6 w-6" />
-            </div>
-            <h3 className="relative text-lg font-bold text-brand-text">Email</h3>
-            <p className="relative mt-2 text-sm font-medium text-slate-600">{siteConfig.email}</p>
-          </a>
+          {contactMethods.map(({ icon: Icon, label, value, href, color, bg, external, extraPhones }) => (
+            <a
+              key={label}
+              href={href}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className={`group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br ${bg} p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-slate-200/80 hover:shadow-lg`}
+            >
+              <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-          <div className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-brand-primary/5 to-blue-50 p-8 text-center">
-            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-blue-500 text-white shadow-lg">
-              <Phone className="h-6 w-6" />
-            </div>
-            <h3 className="relative text-lg font-bold text-brand-text">Phone</h3>
-            <div className="relative mt-2 space-y-1">
-              {siteConfig.phones.map((phone) => (
-                <a
-                  key={phone.tel}
-                  href={`tel:${phone.tel}`}
-                  className="block text-sm font-medium text-slate-600 transition-colors hover:text-brand-primary"
-                >
-                  {phone.display}
-                </a>
-              ))}
-            </div>
-          </div>
+              <div
+                className={`relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${color} text-white shadow-lg shadow-slate-900/10 transition-all duration-300 group-hover:scale-110`}
+              >
+                <Icon className="h-6 w-6" />
+              </div>
 
-          <a
-            href={siteConfig.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-green-50 to-emerald-50 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-slate-200/80 hover:shadow-lg"
-          >
-            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 text-white shadow-lg">
-              <MessageCircle className="h-6 w-6" />
-            </div>
-            <h3 className="relative text-lg font-bold text-brand-text">WhatsApp</h3>
-            <p className="relative mt-2 text-sm font-medium text-slate-600">Chat with us</p>
-          </a>
+              <h3 className="relative text-lg font-bold text-brand-text">{label}</h3>
+
+              <p className="relative mt-2 text-sm font-medium text-slate-600">{value}</p>
+
+              {extraPhones && extraPhones.length > 0 && (
+                <p className="relative mt-1 text-sm text-slate-500">
+                  {extraPhones.map((p) => (
+                    <span key={p.tel} className="block">
+                      {p.display}
+                    </span>
+                  ))}
+                </p>
+              )}
+            </a>
+          ))}
 
           <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200/60 bg-white/80 p-8 text-center">
             <h3 className="text-lg font-bold text-brand-text">Follow Us</h3>

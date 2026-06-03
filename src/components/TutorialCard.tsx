@@ -12,17 +12,19 @@ export function TutorialCard({ tutorial, onEnroll }: TutorialCardProps) {
   const enrollable = isTutorialEnrollable(tutorial);
 
   return (
-    <article className="group relative overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <article className="group relative overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-secondary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary via-brand-secondary to-blue-500" />
+      <div className="absolute left-0 right-0 top-0 h-1 bg-gradient-to-r from-brand-primary via-brand-secondary to-blue-500" />
 
       <div className="relative p-6">
         <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary/15 to-brand-secondary/10 text-brand-primary transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-brand-primary/20">
           <GraduationCap className="h-6 w-6" />
         </div>
 
-        <h3 className="text-lg font-bold text-brand-text">{tutorial.name}</h3>
+        <h3 className="text-lg font-bold text-brand-text transition-colors duration-300">
+          {tutorial.name}
+        </h3>
 
         <p className="mt-2 min-h-[2.5rem] flex-1 text-sm leading-relaxed text-slate-600">
           {tutorial.description}

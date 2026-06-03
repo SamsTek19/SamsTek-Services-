@@ -6,6 +6,12 @@ interface HeaderProps {
   onEnrollClick: () => void;
 }
 
+const navLinks = [
+  { label: "Tutorials", href: "#tutorials" },
+  { label: "Why Us", href: "#why-us" },
+  { label: "Contact", href: "#contact" },
+];
+
 export function Header({ onEnrollClick }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -17,12 +23,6 @@ export function Header({ onEnrollClick }: HeaderProps) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navLinks = [
-    { label: "Tutorials", href: "#tutorials" },
-    { label: "Why Us", href: "#why-us" },
-    { label: "Contact", href: "#contact" },
-  ];
 
   return (
     <header
@@ -69,7 +69,7 @@ export function Header({ onEnrollClick }: HeaderProps) {
       </div>
 
       {open && (
-        <div className="border-t border-slate-200/40 bg-white/80 px-4 py-4 backdrop-blur-md md:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="border-t border-slate-200/40 bg-white/80 px-4 py-4 backdrop-blur-md md:hidden">
           <nav className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <a
