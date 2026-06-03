@@ -22,6 +22,7 @@ const emptyTutorial = {
   description: "",
   price: "",
   is_active: true,
+  coming_soon: false,
 };
 
 export function Admin() {
@@ -36,7 +37,7 @@ export function Admin() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyTutorial);
@@ -57,6 +58,16 @@ export function Admin() {
 
   useEffect(() => {
     checkSession();
+
+    if (!supabase) return;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, authSession) => {
+      setSession(!!authSession);
+    });
+
+    return () => subscription.unsubscribe();
   }, [checkSession]);
 
   const loadTutorials = useCallback(async () => {
@@ -74,7 +85,11 @@ export function Admin() {
       .select("*")
       .order("created_at", { ascending: true });
 
-    if (!error && data) setTutorials(data as Tutorial[]);
+    if (error) {
+      setMessage({ type: "error", text: `Could not load tutorials: ${error.message}` });
+    } else if (data) {
+      setTutorials(data as Tutorial[]);
+    }
     setLoading(false);
   }, [session]);
 
@@ -137,36 +152,79 @@ export function Admin() {
     e.preventDefault();
     setMessage(null);
 
-    const payload = {
+    const fullPayload = {
       name: form.name.trim(),
       description: form.description.trim(),
       price: parseFloat(form.price),
       is_active: form.is_active,
+      coming_soon: form.coming_soon,
       updated_at: new Date().toISOString(),
     };
 
-    if (!payload.name || !payload.description || Number.isNaN(payload.price)) {
-      setMessage("Please complete all tutorial fields.");
+    if (!fullPayload.name || !fullPayload.description || Number.isNaN(fullPayload.price)) {
+      setMessage({ type: "error", text: "Please complete all tutorial fields." });
       return;
     }
 
     if (!isSupabaseConfigured || !supabase) {
-      setMessage("Connect Supabase to save tutorials to the database.");
+      setMessage({ type: "error", text: "Connect Supabase to save tutorials to the database." });
       return;
     }
 
-    if (editingId) {
-      const { error } = await supabase.from("tutorials").update(payload).eq("id", editingId);
-      setMessage(error ? error.message : "Tutorial updated.");
-    } else {
-      const { error } = await supabase.from("tutorials").insert(payload);
-      setMessage(error ? error.message : "Tutorial added.");
+    const { data: authData } = await supabase.auth.getSession();
+    if (!authData.session) {
+      setMessage({
+        type: "error",
+        text: "You are not signed in. Log out and sign in again with your Supabase admin account.",
+      });
+      return;
     }
+
+    const client = supabase;
+
+    const { coming_soon: _omit, ...payloadWithoutComingSoon } = fullPayload;
+
+    async function trySave(includeComingSoon: boolean) {
+      const payload = includeComingSoon ? fullPayload : payloadWithoutComingSoon;
+      if (editingId) {
+        return client.from("tutorials").update(payload).eq("id", editingId);
+      }
+      return client.from("tutorials").insert(payload);
+    }
+
+    let { error } = await trySave(true);
+
+    if (error?.message.includes("coming_soon")) {
+      const retry = await trySave(false);
+      error = retry.error;
+
+      if (!error) {
+        setMessage({
+          type: "success",
+          text: "Saved (without Coming soon flag). Run supabase/migrations/003_add_coming_soon_only.sql in Supabase SQL Editor to enable that option.",
+        });
+        setShowForm(false);
+        setEditingId(null);
+        setForm(emptyTutorial);
+        await loadTutorials();
+        return;
+      }
+    }
+
+    if (error) {
+      setMessage({ type: "error", text: error.message });
+      return;
+    }
+
+    setMessage({
+      type: "success",
+      text: editingId ? "Tutorial updated successfully." : "Tutorial added successfully.",
+    });
 
     setShowForm(false);
     setEditingId(null);
     setForm(emptyTutorial);
-    loadTutorials();
+    await loadTutorials();
   }
 
   function startEdit(tutorial: Tutorial) {
@@ -176,6 +234,7 @@ export function Admin() {
       description: tutorial.description,
       price: String(tutorial.price),
       is_active: tutorial.is_active,
+      coming_soon: tutorial.coming_soon ?? false,
     });
     setShowForm(true);
   }
@@ -185,8 +244,12 @@ export function Admin() {
     if (!supabase) return;
 
     const { error } = await supabase.from("tutorials").delete().eq("id", id);
-    setMessage(error ? error.message : "Tutorial deleted.");
-    loadTutorials();
+    if (error) {
+      setMessage({ type: "error", text: error.message });
+      return;
+    }
+    setMessage({ type: "success", text: "Tutorial deleted." });
+    await loadTutorials();
   }
 
   function exportEnrollments() {
@@ -354,7 +417,16 @@ export function Admin() {
         </div>
 
         {message && (
-          <p className="mb-4 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-800">{message}</p>
+          <p
+            className={`mb-4 rounded-lg px-4 py-2 text-sm ${
+              message.type === "error"
+                ? "bg-red-50 text-red-800"
+                : "bg-green-50 text-green-800"
+            }`}
+            role="alert"
+          >
+            {message.text}
+          </p>
         )}
 
         {tab === "tutorials" && (
@@ -413,6 +485,14 @@ export function Admin() {
                     />
                     Active (visible on website)
                   </label>
+                  <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={form.coming_soon}
+                      onChange={(e) => setForm((f) => ({ ...f, coming_soon: e.target.checked }))}
+                    />
+                    Coming soon (hide price and enrollment on website)
+                  </label>
                 </div>
                 <div className="mt-4 flex gap-2">
                   <button
@@ -457,7 +537,7 @@ export function Admin() {
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                            className={`mr-2 rounded-full px-2 py-0.5 text-xs font-medium ${
                               t.is_active
                                 ? "bg-green-100 text-green-700"
                                 : "bg-slate-100 text-slate-600"
@@ -465,6 +545,11 @@ export function Admin() {
                           >
                             {t.is_active ? "Active" : "Hidden"}
                           </span>
+                          {t.coming_soon && (
+                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
+                              Coming soon
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">

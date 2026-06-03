@@ -21,7 +21,35 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Environment Setup
 
-1. Copy `.env.example` to `.env` and fill in your keys.
+### Supabase (linked)
+
+Your `.env` is configured with:
+
+| Variable | Purpose |
+|----------|---------|
+| `VITE_SUPABASE_URL` | Project API URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Your `sb_publishable_...` key |
+| `VITE_SUPABASE_ANON_KEY` | Legacy anon key (fallback for same project) |
+
+Get both **Project URL** and **publishable key** from the same place: [Supabase Dashboard](https://supabase.com/dashboard) → your project → **Settings** → **API** (or **Connect**).
+
+Test the connection:
+
+```bash
+node scripts/test-supabase.mjs
+```
+
+Restart the dev server after changing `.env`:
+
+```bash
+npm run dev
+```
+
+If the publishable key returns "Invalid API key", the URL and key are from different projects — copy the **Project URL** from the project where you created that publishable key.
+
+### Full setup
+
+1. Copy `.env.example` to `.env` if needed and fill in your keys.
 2. Create a [Supabase](https://supabase.com) project.
 3. Run the migration in `supabase/migrations/001_initial_schema.sql` via the SQL Editor.
 4. Deploy the edge function:

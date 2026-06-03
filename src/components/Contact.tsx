@@ -1,59 +1,78 @@
-import { Facebook, Instagram, Linkedin, Mail, Phone, Twitter } from "lucide-react";
+import { Instagram, Mail, MessageCircle, Phone, Youtube } from "lucide-react";
 import { siteConfig } from "../lib/site";
 
 export function Contact() {
   const social = [
-    { label: "Facebook", href: siteConfig.social.facebook, icon: Facebook },
-    { label: "Twitter", href: siteConfig.social.twitter, icon: Twitter },
-    { label: "LinkedIn", href: siteConfig.social.linkedin, icon: Linkedin },
     { label: "Instagram", href: siteConfig.social.instagram, icon: Instagram },
+    { label: "YouTube", href: siteConfig.social.youtube, icon: Youtube },
   ];
 
   return (
-    <section id="contact" className="px-4 py-16 sm:px-6 sm:py-20">
-      <div className="mx-auto max-w-6xl">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-brand-text">Contact Us</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-slate-600">
+    <section id="contact" className="relative px-4 py-20 sm:px-6 sm:py-24">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/3 -left-40 h-80 w-80 rounded-full bg-brand-primary/5 blur-3xl" />
+        <div className="absolute bottom-1/3 -right-40 h-80 w-80 rounded-full bg-brand-secondary/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl">
+        <div className="mb-16 text-center">
+          <div className="mb-3 inline-block rounded-full border border-brand-secondary/20 bg-brand-secondary/5 px-3 py-1">
+            <p className="text-xs font-semibold uppercase tracking-widest text-brand-secondary">
+              Get in Touch
+            </p>
+          </div>
+          <h2 className="text-4xl font-bold text-brand-text sm:text-5xl">Contact Us</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
             Have questions? Reach out and our team will help you get started.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           <a
             href={`mailto:${siteConfig.email}`}
-            className="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:border-brand-primary/40"
+            className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-blue-50 to-cyan-50 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-slate-200/80 hover:shadow-lg"
           >
-            <Mail className="h-8 w-8 text-brand-primary" />
-            <h3 className="mt-4 font-semibold text-brand-text">Email</h3>
-            <p className="mt-2 text-sm text-slate-600">{siteConfig.email}</p>
+            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg">
+              <Mail className="h-6 w-6" />
+            </div>
+            <h3 className="relative text-lg font-bold text-brand-text">Email</h3>
+            <p className="relative mt-2 text-sm font-medium text-slate-600">{siteConfig.email}</p>
           </a>
 
-          <a
-            href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
-            className="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:border-brand-primary/40"
-          >
-            <Phone className="h-8 w-8 text-brand-primary" />
-            <h3 className="mt-4 font-semibold text-brand-text">Phone</h3>
-            <p className="mt-2 text-sm text-slate-600">{siteConfig.phone}</p>
-          </a>
+          <div className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-brand-primary/5 to-blue-50 p-8 text-center">
+            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary to-blue-500 text-white shadow-lg">
+              <Phone className="h-6 w-6" />
+            </div>
+            <h3 className="relative text-lg font-bold text-brand-text">Phone</h3>
+            <div className="relative mt-2 space-y-1">
+              {siteConfig.phones.map((phone) => (
+                <a
+                  key={phone.tel}
+                  href={`tel:${phone.tel}`}
+                  className="block text-sm font-medium text-slate-600 transition-colors hover:text-brand-primary"
+                >
+                  {phone.display}
+                </a>
+              ))}
+            </div>
+          </div>
 
           <a
             href={siteConfig.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition hover:border-brand-primary/40"
+            className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-gradient-to-br from-green-50 to-emerald-50 p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-slate-200/80 hover:shadow-lg"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-sm font-bold text-white">
-              WA
-            </span>
-            <h3 className="mt-4 font-semibold text-brand-text">WhatsApp</h3>
-            <p className="mt-2 text-sm text-slate-600">Chat with us</p>
+            <div className="relative mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 text-white shadow-lg">
+              <MessageCircle className="h-6 w-6" />
+            </div>
+            <h3 className="relative text-lg font-bold text-brand-text">WhatsApp</h3>
+            <p className="relative mt-2 text-sm font-medium text-slate-600">Chat with us</p>
           </a>
 
-          <div className="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-            <h3 className="font-semibold text-brand-text">Social Media</h3>
-            <div className="mt-4 flex gap-3">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200/60 bg-white/80 p-8 text-center">
+            <h3 className="text-lg font-bold text-brand-text">Follow Us</h3>
+            <div className="mt-4 flex gap-4">
               {social.map(({ label, href, icon: Icon }) => (
                 <a
                   key={label}
@@ -61,9 +80,10 @@ export function Contact() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-brand-primary hover:text-white"
+                  className="group relative inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                 >
-                  <Icon className="h-5 w-5" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-primary to-brand-secondary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <Icon className="relative h-5 w-5 transition-colors duration-300 group-hover:text-white" />
                 </a>
               ))}
             </div>

@@ -3,11 +3,12 @@ import type { Tutorial } from "../lib/types";
 export const demoTutorials: Tutorial[] = [
   {
     id: "demo-1",
-    name: "Web Development Fundamentals",
+    name: "Master Web Development",
     description:
       "Learn HTML, CSS, and JavaScript to build responsive websites from scratch.",
     price: 150,
     is_active: true,
+    coming_soon: false,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -16,8 +17,9 @@ export const demoTutorials: Tutorial[] = [
     name: "Python for Beginners",
     description:
       "Master Python basics, data structures, and automation with hands-on projects.",
-    price: 120,
+    price: 0,
     is_active: true,
+    coming_soon: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -26,8 +28,9 @@ export const demoTutorials: Tutorial[] = [
     name: "Digital Marketing Essentials",
     description:
       "Grow your brand with SEO, social media strategy, and content marketing.",
-    price: 99,
+    price: 0,
     is_active: true,
+    coming_soon: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -36,8 +39,9 @@ export const demoTutorials: Tutorial[] = [
     name: "Cybersecurity Basics",
     description:
       "Understand online threats, safe browsing, and essential security practices.",
-    price: 180,
+    price: 0,
     is_active: true,
+    coming_soon: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },

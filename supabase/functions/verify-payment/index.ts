@@ -24,8 +24,8 @@ Deno.serve(async (req) => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const fromEmail =
       Deno.env.get("FROM_EMAIL") ?? "SamsTek Services <onboarding@resend.dev>";
-    const supportEmail = Deno.env.get("SUPPORT_EMAIL") ?? "support@samstek.com";
-    const supportPhone = Deno.env.get("SUPPORT_PHONE") ?? "+233 XX XXX XXXX";
+    const supportEmail = Deno.env.get("SUPPORT_EMAIL") ?? "samstekservices@gmail.com";
+    const supportPhone = Deno.env.get("SUPPORT_PHONE") ?? "0551694282 / 0508589087";
 
     if (!paystackSecret || !supabaseUrl || !serviceRoleKey) {
       return json({ error: "Server configuration incomplete" }, 500);

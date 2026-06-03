@@ -12,14 +12,15 @@ export const siteConfig = {
   tagline: "Learn Practical Tech Skills with SamsTek Services",
   description:
     "Enroll in our tutorials and training programs to gain valuable digital and technology skills.",
-  email: "info@samstekservices.com",
-  phone: "+233 24 000 0000",
-  whatsapp: "https://wa.me/233240000000",
+  email: "samstekservices@gmail.com",
+  phones: [
+    { display: "0551694282", tel: "+233551694282" },
+    { display: "0508589087", tel: "+233508589087" },
+  ],
+  whatsapp: "https://wa.link/a3t2p4",
   social: {
-    facebook: "https://facebook.com/samstekservices",
-    twitter: "https://twitter.com/samstekservices",
-    linkedin: "https://linkedin.com/company/samstekservices",
-    instagram: "https://instagram.com/samstekservices",
+    instagram: "https://www.instagram.com/samuel_sarfo19/",
+    youtube: "https://www.youtube.com/channel/UCxGaafeeePh4kCYGK7rbz9A",
   },
   currency: "GHS",
   paystackPaymentUrl,

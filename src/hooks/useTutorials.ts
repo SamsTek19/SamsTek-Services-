@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { demoTutorials } from "../data/demoTutorials";
+import { applyTutorialEnrollmentStatus } from "../lib/tutorials";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import type { Tutorial } from "../lib/types";
+
+function normalizeTutorials(list: Tutorial[]) {
+  return list.map(applyTutorialEnrollmentStatus);
+}
 
 export function useTutorials(includeInactive = false) {
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
@@ -16,7 +21,7 @@ export function useTutorials(includeInactive = false) {
       const filtered = includeInactive
         ? demoTutorials
         : demoTutorials.filter((t) => t.is_active);
-      setTutorials(filtered);
+      setTutorials(normalizeTutorials(filtered));
       setLoading(false);
       return;
     }
@@ -31,9 +36,11 @@ export function useTutorials(includeInactive = false) {
 
     if (fetchError) {
       setError(fetchError.message);
-      setTutorials(includeInactive ? demoTutorials : demoTutorials.filter((t) => t.is_active));
+      setTutorials(
+        normalizeTutorials(includeInactive ? demoTutorials : demoTutorials.filter((t) => t.is_active)),
+      );
     } else {
-      setTutorials((data as Tutorial[]) ?? []);
+      setTutorials(normalizeTutorials((data as Tutorial[]) ?? []));
     }
 
     setLoading(false);

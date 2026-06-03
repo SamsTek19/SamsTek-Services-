@@ -5,7 +5,7 @@ create table if not exists public.tutorials (
   name text not null,
   description text not null,
   price numeric(12, 2) not null check (price >= 0),
-  is_active boolean not null default true,
+  coming_soon: boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -77,28 +77,32 @@ create policy "Admins read admin profiles"
   using (auth.uid() = user_id);
 
 -- Seed sample tutorials
-insert into public.tutorials (name, description, price, is_active) values
+insert into public.tutorials (name, description, price, is_active, coming_soon) values
   (
-    'Web Development Fundamentals',
+    'Master Web Development',
     'Learn HTML, CSS, and JavaScript to build responsive websites from scratch.',
     150.00,
-    true
+    true,
+    false
   ),
   (
     'Python for Beginners',
     'Master Python basics, data structures, and automation with hands-on projects.',
-    120.00,
+    0.00,
+    true,
     true
   ),
   (
     'Digital Marketing Essentials',
     'Grow your brand with SEO, social media strategy, and content marketing.',
-    99.00,
+    0.00,
+    true,
     true
   ),
   (
     'Cybersecurity Basics',
     'Understand online threats, safe browsing, and essential security practices.',
-    180.00,
+    0.00,
+    true,
     true
   );
