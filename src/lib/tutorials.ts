@@ -3,9 +3,9 @@ import type { Tutorial } from "./types";
 export const ENROLLABLE_TUTORIAL_NAME = "Master Web Development";
 
 export function isTutorialEnrollable(tutorial: Tutorial): boolean {
+  if (!tutorial.is_active) return false;
   if (tutorial.coming_soon === true) return false;
-  if (tutorial.coming_soon === false) return true;
-  return tutorial.name === ENROLLABLE_TUTORIAL_NAME;
+  return true;
 }
 
 export function applyTutorialEnrollmentStatus(tutorial: Tutorial): Tutorial {

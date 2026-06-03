@@ -11,6 +11,13 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Logo } from "../components/Logo";
 import { demoTutorials } from "../data/demoTutorials";
+import {
+  enrollmentFromRow,
+  pickTutorialSavePayload,
+  tutorialFromRow,
+  tutorialJoinColumns,
+  tutorialToRow,
+} from "../lib/dbMappers";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import { siteConfig } from "../lib/site";
 import type { Enrollment, Tutorial } from "../lib/types";
@@ -88,7 +95,7 @@ export function Admin() {
     if (error) {
       setMessage({ type: "error", text: `Could not load tutorials: ${error.message}` });
     } else if (data) {
-      setTutorials(data as Tutorial[]);
+      setTutorials(data.map((row) => tutorialFromRow(row)));
     }
     setLoading(false);
   }, [session]);
@@ -103,12 +110,19 @@ export function Admin() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("enrollments")
-      .select("*, tutorials(name)")
-      .order("created_at", { ascending: false });
+    let rows: Record<string, unknown>[] | null = null;
+    for (const joinCol of tutorialJoinColumns()) {
+      const { data, error } = await supabase
+        .from("enrollments")
+        .select(`*, tutorials(${joinCol})`)
+        .order("created_at", { ascending: false });
+      if (!error && data) {
+        rows = data;
+        break;
+      }
+    }
 
-    if (!error && data) setEnrollments(data as Enrollment[]);
+    if (rows) setEnrollments(rows.map((row) => enrollmentFromRow(row)));
     setLoading(false);
   }, [session]);
 
@@ -152,19 +166,20 @@ export function Admin() {
     e.preventDefault();
     setMessage(null);
 
-    const fullPayload = {
+    const tutorialInput = {
       name: form.name.trim(),
       description: form.description.trim(),
       price: parseFloat(form.price),
       is_active: form.is_active,
       coming_soon: form.coming_soon,
-      updated_at: new Date().toISOString(),
     };
 
-    if (!fullPayload.name || !fullPayload.description || Number.isNaN(fullPayload.price)) {
+    if (!tutorialInput.name || !tutorialInput.description || Number.isNaN(tutorialInput.price)) {
       setMessage({ type: "error", text: "Please complete all tutorial fields." });
       return;
     }
+
+    const tutorialPayloads = tutorialToRow(tutorialInput);
 
     if (!isSupabaseConfigured || !supabase) {
       setMessage({ type: "error", text: "Connect Supabase to save tutorials to the database." });
@@ -182,33 +197,33 @@ export function Admin() {
 
     const client = supabase;
 
-    const { coming_soon: _omit, ...payloadWithoutComingSoon } = fullPayload;
-
-    async function trySave(includeComingSoon: boolean) {
-      const payload = includeComingSoon ? fullPayload : payloadWithoutComingSoon;
+    async function trySave(payload: Record<string, unknown>) {
       if (editingId) {
         return client.from("tutorials").update(payload).eq("id", editingId);
       }
       return client.from("tutorials").insert(payload);
     }
 
-    let { error } = await trySave(true);
+    let payload = { ...tutorialPayloads.live };
+    if (tutorialInput.coming_soon) {
+      payload.coming_soon = true;
+    }
 
-    if (error?.message.includes("coming_soon")) {
-      const retry = await trySave(false);
-      error = retry.error;
+    let { error } = await trySave(payload);
 
-      if (!error) {
-        setMessage({
-          type: "success",
-          text: "Saved (without Coming soon flag). Run supabase/migrations/003_add_coming_soon_only.sql in Supabase SQL Editor to enable that option.",
-        });
-        setShowForm(false);
-        setEditingId(null);
-        setForm(emptyTutorial);
-        await loadTutorials();
-        return;
-      }
+    if (error) {
+      const withoutComingSoon = { ...payload };
+      delete withoutComingSoon.coming_soon;
+      const retryNoFlag = await trySave(withoutComingSoon);
+      error = retryNoFlag.error;
+      payload = withoutComingSoon;
+    }
+
+    if (error) {
+      const alt = pickTutorialSavePayload(tutorialPayloads, error.message);
+      if (tutorialInput.coming_soon) alt.coming_soon = true;
+      const retrySchema = await trySave(alt);
+      error = retrySchema.error;
     }
 
     if (error) {

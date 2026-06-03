@@ -1,6 +1,7 @@
 import { Loader2, X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { createPendingEnrollment } from "../lib/enrollments";
 import { redirectToPaystackShop } from "../lib/paystackShop";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import { siteConfig } from "../lib/site";
@@ -47,15 +48,14 @@ export function EnrollmentModal({ tutorial, open, onClose }: EnrollmentModalProp
 
     try {
       if (isSupabaseConfigured && supabase) {
-        const { error: insertError } = await supabase.from("enrollments").insert({
+        const { error: insertError } = await createPendingEnrollment(supabase, {
           tutorial_id: selectedTutorial.id,
           full_name: form.fullName.trim(),
           email: form.email.trim(),
           phone: form.phone.trim(),
-          status: "pending",
         });
 
-        if (insertError) throw new Error(insertError.message);
+        if (insertError) throw insertError;
       }
 
       sessionStorage.setItem(

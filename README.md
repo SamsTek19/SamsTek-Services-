@@ -51,7 +51,7 @@ If the publishable key returns "Invalid API key", the URL and key are from diffe
 
 1. Copy `.env.example` to `.env` if needed and fill in your keys.
 2. Create a [Supabase](https://supabase.com) project.
-3. Run the migration in `supabase/migrations/001_initial_schema.sql` via the SQL Editor.
+3. Run migrations in the SQL Editor (in order): `001_initial_schema.sql`, then `005_fix_enrollment_insert_rls.sql` if enrollments are not saving.
 4. Deploy the edge function:
 
    ```bash

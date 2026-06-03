@@ -69,7 +69,11 @@ Deno.serve(async (req) => {
       return json({ error: "Enrollment not found" }, 404);
     }
 
-    if (enrollment.status === "paid") {
+    const currentStatus =
+      (enrollment.status as string | undefined) ??
+      (enrollment.payment_status as string | undefined);
+
+    if (currentStatus === "paid") {
       return json({
         success: true,
         alreadyPaid: true,
@@ -77,27 +81,52 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: updated, error: updateError } = await supabase
+    let { data: updated, error: updateError } = await supabase
       .from("enrollments")
       .update({
-        status: "paid",
+        payment_status: "paid",
         amount_paid: amountPaid,
         payment_reference: reference,
       })
       .eq("id", enrollmentId)
-      .select("*, tutorials(name)")
+      .select("*, tutorials(title)")
       .single();
+
+    if (updateError?.message.includes("payment_status")) {
+      const retry = await supabase
+        .from("enrollments")
+        .update({
+          status: "paid",
+          amount_paid: amountPaid,
+          payment_reference: reference,
+        })
+        .eq("id", enrollmentId)
+        .select("*, tutorials(name)")
+        .single();
+      updated = retry.data;
+      updateError = retry.error;
+    }
 
     if (updateError) {
       return json({ error: updateError.message }, 500);
     }
 
     const tutorialName =
-      (updated.tutorials as { name: string } | null)?.name ?? "Tutorial";
+      (updated.tutorials as { name?: string; title?: string } | null)?.name ??
+      (updated.tutorials as { title?: string } | null)?.title ??
+      "Tutorial";
 
-    if (resendApiKey) {
+    const studentEmail =
+      (updated.email as string | undefined) ??
+      (updated.student_email as string | undefined);
+    const studentName =
+      (updated.full_name as string | undefined) ??
+      (updated.student_name as string | undefined) ??
+      "Student";
+
+    if (resendApiKey && studentEmail) {
       const html = buildConfirmationEmail({
-        studentName: updated.full_name,
+        studentName,
         tutorialName,
         amountPaid,
         reference,
@@ -113,7 +142,7 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           from: fromEmail,
-          to: [updated.email],
+          to: [studentEmail],
           subject: "Enrollment Confirmation – SamsTek Services",
           html,
         }),

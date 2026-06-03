@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { demoTutorials } from "../data/demoTutorials";
+import { tutorialFromRow } from "../lib/dbMappers";
 import { applyTutorialEnrollmentStatus } from "../lib/tutorials";
 import { isSupabaseConfigured, supabase } from "../lib/supabase";
 import type { Tutorial } from "../lib/types";
@@ -26,13 +27,10 @@ export function useTutorials(includeInactive = false) {
       return;
     }
 
-    let query = supabase.from("tutorials").select("*").order("created_at", { ascending: true });
-
-    if (!includeInactive) {
-      query = query.eq("is_active", true);
-    }
-
-    const { data, error: fetchError } = await query;
+    const { data, error: fetchError } = await supabase
+      .from("tutorials")
+      .select("*")
+      .order("created_at", { ascending: true });
 
     if (fetchError) {
       setError(fetchError.message);
@@ -40,7 +38,9 @@ export function useTutorials(includeInactive = false) {
         normalizeTutorials(includeInactive ? demoTutorials : demoTutorials.filter((t) => t.is_active)),
       );
     } else {
-      setTutorials(normalizeTutorials((data as Tutorial[]) ?? []));
+      const mapped = (data ?? []).map((row) => tutorialFromRow(row));
+      const filtered = includeInactive ? mapped : mapped.filter((t) => t.is_active);
+      setTutorials(normalizeTutorials(filtered));
     }
 
     setLoading(false);
